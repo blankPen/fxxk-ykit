@@ -31,6 +31,10 @@
     "minimist": "^1.2.0",
     "optimist": "^0.6.1",
     "serve-index": "^1.9.1",
-    "serve-static": "^1.13.1"
+    "serve-static": "^1.13.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-hot-middleware": "^2.20.0",
+    "webpack-merge": "^4.1.1"
   }
 }

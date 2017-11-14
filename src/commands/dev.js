@@ -1,11 +1,15 @@
 
 
 import optimist from 'optimist';
+
 import express from 'express';
 import serveStatic from 'serve-static';
 import serveIndex from 'serve-index';
 import bodyParser from 'body-parser';
 
+import webpack from 'webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 
 export function setOptions(opt) {
   opt.alias('p', 'port');
@@ -26,7 +30,7 @@ export function setOptions(opt) {
 // createServer('/Users/pengzhen/Documents', argv.p);
 
 export const run = (option) => {
-  const cwd = sysPath.resolve('/Users/pengzhen/Documents');
+  const cwd = sysPath.resolve('/Users/apple/git');
   const app = express();
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,6 +47,22 @@ export const run = (option) => {
     console.log(extName);
     next();
   });
+
+  // Step 1: 引入 webpack 的配置文件和 生成 webpack 的编译器
+  const webpackConfig = require(process.env.WEBPACK_CONFIG ? process.env.WEBPACK_CONFIG : './webpack.config');
+  const compiler = webpack(webpackConfig);
+  // Step 2: 将编译器挂载给 webpack dev middleware
+  app.use(webpackDevMiddleware(compiler, {
+    noInfo: true,
+    publicPath: webpackConfig.output.publicPath,
+  }));
+
+  // Step 3: 将编译器挂载给 webpack hot middleware
+  app.use(webpackHotMiddleware(compiler, {
+    log: log.info,
+    path: '/__webpack_hmr',
+    heartbeat: 10 * 1000,
+  }));
 
   app.listen(8000);
 };
